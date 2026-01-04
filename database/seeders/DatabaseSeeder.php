@@ -13,13 +13,17 @@ class DatabaseSeeder extends Seeder
     /**
      * Seed the application's database.
      */
-    public function run(): void
-    {
-        // User::factory(10)->create();
+    public function run(): void {
+        $cafe = \App\Models\Cafe::create([
+            'name' => 'Faruk-Uthman Dine',
+            'location' => 'Mahallah Faruq',
+            'open_time' => '08:00:00',
+            'close_time' => '22:00:00',
+        ]);
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        $cafe->menuItems()->createMany([
+            ['name' => 'Mee Tarik', 'price' => 8.00, 'category' => 'Food', 'description' => 'Hand-pulled noodles...'],
+            ['name' => 'Teh Ais', 'price' => 2.00, 'category' => 'Drinks', 'description' => 'Iced tea with milk'],
         ]);
     }
 }
