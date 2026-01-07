@@ -10,18 +10,18 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void
-    {
-        Schema::create('menu_items', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('cafe_id')->constrained()->onDelete('cascade');
-            $table->string('name');
-            $table->string('description');
-            $table->decimal('price', 8, 2);
-            $table->string('category'); // e.g., 'Food' or 'Drinks'
-            $table->string('image')->nullable();
-            $table->timestamps();
-        });
-    }
+{
+    Schema::create('menu_items', function (Blueprint $table) {
+        $table->id();
+        $table->foreignId('cafe_id')->constrained()->onDelete('cascade');
+        $table->string('name');
+        $table->decimal('price', 8, 2);
+        $table->string('category');
+        $table->text('description')->nullable();
+        $table->string('image_url')->nullable();
+        $table->timestamps();
+    });
+}
 
     /**
      * Reverse the migrations.

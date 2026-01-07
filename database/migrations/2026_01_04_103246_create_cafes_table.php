@@ -10,16 +10,17 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void
-    {
-        Schema::create('cafes', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('location');
-            $table->time('open_time');
-            $table->time('close_time');
-            $table->timestamps();
-        });
-    }
+{
+    Schema::create('cafes', function (Blueprint $table) {
+        $table->id();
+        $table->string('name');
+        $table->string('location');
+        $table->time('open_time');
+        $table->time('close_time');
+        $table->string('image_url')->nullable();
+        $table->timestamps();
+    });
+}
 
     /**
      * Reverse the migrations.

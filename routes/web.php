@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CafeController;
 
 // Redirect root to login
 Route::get('/', function () { return redirect('/login'); });
@@ -28,4 +29,18 @@ Route::middleware(['auth'])->group(function () {
     
     // Screen 6: Order Confirmed
     Route::get('/order-success/{id}', [AuthController::class, 'orderSuccess'])->name('order.success');
+
+    Route::get('/cafe/{id}', [CafeController::class, 'show'])->name('cafe.show');
+
+
+    Route::get('/', [App\Http\Controllers\CafeController::class, 'index'])->name('cafes.index');
+
+    Route::get('/checkout', function () {
+    return view('checkout');})->name('checkout');
+
+    Route::get('/order', function () {
+    return view('order');})->name('order');
+
+    Route::get('/cafe/{id}', [CafeController::class, 'show']);
+
 });
