@@ -14,7 +14,6 @@ class DatabaseSeeder extends Seeder
 
     public function run(): void
 {
-    // Fix for SQLite: Use 'PRAGMA' instead of 'SET'
     DB::statement('PRAGMA foreign_keys = OFF;');
     Cafe::truncate();
     MenuItem::truncate();

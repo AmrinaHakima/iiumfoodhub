@@ -20,7 +20,6 @@
         position: relative;
     }
 
-    /* Receipt jagged edge effect */
     .order-card::after {
         content: "";
         position: absolute;
@@ -32,6 +31,10 @@
                     linear-gradient(45deg, #f4f7f6 10px, transparent 0);
         background-size: 20px 20px;
     }
+
+    .status-transition {
+        transition: all 0.5s ease;
+    }
 </style>
 
 <div class="min-h-screen bg-[#f4f7f6] px-6 flex flex-col items-center justify-center pb-20">
@@ -41,8 +44,8 @@
     </div>
 
     <div class="text-center mb-8">
-        <h1 class="text-2xl font-black text-gray-800">Order Confirmed!</h1>
-        <p class="text-gray-500 text-sm">Your order has been sent to the cafe.</p>
+        <h1 class="text-2xl font-black text-gray-800" id="header-text">Order Confirmed!</h1>
+        <p class="text-gray-500 text-sm" id="sub-header">Your order has been sent to the cafe.</p>
     </div>
 
     <div class="order-card w-full max-w-md p-8 shadow-sm mb-8">
@@ -53,7 +56,8 @@
             </div>
             <div class="text-right">
                 <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Date</p>
-                <p class="font-bold text-gray-800">{{ now()->format('d M, h:i A') }}</p>
+                {{-- Fixed Timezone to Malaysia --}}
+                <p class="font-bold text-gray-800">{{ now()->timezone('Asia/Kuala_Lumpur')->format('d M, h:i A') }}</p>
             </div>
         </div>
 
@@ -61,12 +65,14 @@
 
         <div class="space-y-4 mb-6">
             <div class="flex justify-between text-sm">
-                <span class="text-gray-500">Payment Method</span>
-                <span class="font-bold text-gray-800">Cash on Delivery</span>
+                <span class="text-gray-500">Method</span>
+                <span class="font-bold text-gray-800" id="display-method">Loading...</span>
             </div>
             <div class="flex justify-between text-sm">
                 <span class="text-gray-500">Status</span>
-                <span class="bg-teal-100 text-teal-700 px-3 py-1 rounded-full text-[10px] font-black uppercase">Preparing</span>
+                <span id="status-badge" class="status-transition bg-teal-100 text-teal-700 px-3 py-1 rounded-full text-[10px] font-black uppercase">
+                    Preparing
+                </span>
             </div>
         </div>
 
@@ -80,25 +86,50 @@
         <a href="{{ url('/') }}" class="block w-full bg-gray-900 text-white text-center py-4 rounded-2xl font-bold shadow-xl hover:bg-gray-800 transition">
             Back to Home
         </a>
-        <button onclick="window.print()" class="block w-full bg-white text-gray-500 text-center py-4 rounded-2xl font-bold border border-gray-200 hover:bg-gray-50 transition text-sm">
-            <i class="fa-solid fa-download mr-2"></i> Save Receipt
-        </button>
     </div>
 </div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // 1. Get the final price from LocalStorage (saved during checkout)
+        // 1. Get data from localStorage
         const cart = JSON.parse(localStorage.getItem('foodhub_cart')) || [];
+        const deliveryMethod = localStorage.getItem('foodhub_delivery_method') || 'Self pickup';
+        
+        // 2. Display Method and Calculate Total
+        document.getElementById('display-method').innerText = deliveryMethod;
+        
         let subtotal = 0;
         cart.forEach(item => subtotal += item.price);
         
-        // Add service fee (RM 0.50)
-        const total = subtotal > 0 ? subtotal + 0.50 : 0;
+        // Match the fee logic from checkout: 0.50 for pickup, 1.00 for delivery
+        const fee = (deliveryMethod === 'Delivery') ? 1.00 : 0.50;
+        const total = subtotal > 0 ? subtotal + fee : 0;
         
         document.getElementById('final-amount').innerText = "RM " + total.toFixed(2);
 
-        // 2. Clear the cart since the order is finished!
+        // 3. Mock logic for "Ready" status
+        setTimeout(function() {
+            const badge = document.getElementById('status-badge');
+            const header = document.getElementById('header-text');
+            const subHeader = document.getElementById('sub-header');
+            
+            // Status just says "Ready" for both now
+            badge.innerText = "Ready";
+            badge.classList.remove('bg-teal-100', 'text-teal-700');
+            badge.classList.add('bg-blue-100', 'text-blue-700');
+            
+            header.innerText = "Order is Ready!";
+
+            // Dynamic Sub-header message
+            if (deliveryMethod === 'Delivery') {
+                subHeader.innerText = "A rider is on the way to you.";
+            } else {
+                subHeader.innerText = "Please head to the cafe counter.";
+            }
+            
+        }, 10000); 
+
+        // 4. Clear Cart but keep method briefly if needed (or clear both)
         localStorage.removeItem('foodhub_cart');
     });
 </script>
